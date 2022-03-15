@@ -36,10 +36,10 @@ impl Synth1Vst {
         // a bit janky, but it can tricky to find logs via VST host
         CombinedLogger::init(
             vec![
-            WriteLogger::new(LevelFilter::Info, Config::default(), File::create("~/Documents/vst.log").unwrap()),
+            WriteLogger::new(LevelFilter::Info, Config::default(), File::create("/home/tobin/Documents/vst.log").unwrap()),
             ]
         ).unwrap();
-        //info!("STARTING PLUGIN");
+        info!("STARTING PLUGIN");
 
         let host = maybe_host.unwrap_or_default();
 
@@ -66,7 +66,7 @@ impl Plugin for Synth1Vst {
 
     fn get_info(&self) -> Info {
         Info {
-            name: "synth1".to_string(),
+            name: "SynthOne".to_string(),
             vendor: "fitzthum".to_string(),
             unique_id: 234292,
             category: Category::Synth,
@@ -89,12 +89,12 @@ impl Plugin for Synth1Vst {
                 match ev.data[0] {
                     0x90 => {
                         // note on
-                        self.params.add_note(ev);
+                        self.params.note_on(ev);
                 
                     },
                     0x80 => {
                         // note off
-                        self.params.remove_note(ev);
+                        self.params.note_off(ev);
                     },
                     _ => (),
                 }

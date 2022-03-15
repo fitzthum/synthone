@@ -3,28 +3,37 @@
 use vst::event::MidiEvent;
 use std::collections::HashMap;
 
-// for now just keep track of the notes that are on
-// but this is probably going to cause some problems 
-// when we try to implement envelope stuff
+use log::*;
 
+// Note must be public so it can be used in Voice
 #[derive(Clone, Copy)]
 pub struct Note {
     pub number: u8,
     pub velocity: u8,
     pub time: f32,
+    pub off_time: f32,
+    pub on: bool,
 }
 
 impl Note {
-    pub fn from_midi(e: MidiEvent) -> Note {
+    fn from_midi(e: MidiEvent) -> Note {
        Note {
             number: e.data[1],
             velocity: e.data[2],
             time: 0.0,
+            off_time: 0.0,
+            on: true,
        }
     }
 
-    pub fn update_time(&mut self, time: f32) {
+    fn update_time(&mut self, time: f32) {
         self.time += time;
+    }
+    
+    fn turn_off(&mut self) {
+        self.on = false;
+        self.off_time = self.time;
+
     }
 }
 
@@ -40,12 +49,15 @@ impl Notebook {
         }
     }
 
-    pub fn add_note(&mut self, e: MidiEvent) {
+    pub fn note_on(&mut self, e: MidiEvent) {
         self.notes.insert(e.data[1], Note::from_midi(e));
     }
 
-    pub fn remove_note(&mut self, e: MidiEvent) {
-        self.notes.remove(&e.data[1]);
+    pub fn note_off(&mut self, e: MidiEvent) {
+        if let Some(note) = self.notes.get_mut(&e.data[1]) {
+            note.turn_off();
+        }
+
     }
 
     pub fn get_notes(&self) -> Vec<Note> {
@@ -57,7 +69,14 @@ impl Notebook {
             note.update_time(time);
         }
     }
-}
 
-// TODO: make some kind of note container wrapper around a dictionary that will hold multiple notes
-// and have some handy traits to add and remove 
+    // since we don't delete the note on note off events anymore
+    // we need to make sure we get rid of notes that have been off
+    // long enough that they can't make a sound anymore
+    pub fn purge_old_notes(&mut self, threshold: f32) {
+        self.notes.retain(|_, note| {
+            (note.time - note.off_time) < threshold
+        });
+
+    }
+}

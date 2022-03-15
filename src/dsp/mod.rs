@@ -10,6 +10,7 @@ use mixer::{Mixer, SimpleMixer, Amp, SimpleAmp};
 
 use std::sync::Arc;
 use vst::buffer::AudioBuffer;
+use log::*;
 
 pub(super) struct PluginDsp {
     params: Arc<PluginState>,
@@ -25,7 +26,7 @@ impl PluginDsp {
     pub fn process(&mut self, buffer: &mut AudioBuffer<f32>) {
 
         let num_samples = buffer.samples();
-        let num_channels = buffer.input_count();
+        let num_channels = buffer.output_count();
         let (_inputs, mut outputs) = buffer.split();
 
         let mut mixer = SimpleMixer::new();
@@ -57,7 +58,11 @@ impl PluginDsp {
         }
         
         let block_time = num_samples as f32 / self.params.get_sample_rate();
-        self.params.notebook.write().unwrap().update_note_times(block_time);
+        let mut notebook = self.params.notebook.write().unwrap();
+        notebook.update_note_times(block_time);
+
+        // TODO: dynamically calculate this threshold based on envelope parameters
+        notebook.purge_old_notes(0.5);
 			
     }
 }

@@ -27,12 +27,12 @@ impl PluginState {
         }
     }
 
-    pub fn add_note(&self, e: MidiEvent) {
-        self.notebook.write().unwrap().add_note(e);
+    pub fn note_on(&self, e: MidiEvent) {
+        self.notebook.write().unwrap().note_on(e);
     }
 
-    pub fn remove_note(&self, e: MidiEvent) {
-        self.notebook.write().unwrap().remove_note(e);
+    pub fn note_off(&self, e: MidiEvent) {
+        self.notebook.write().unwrap().note_off(e);
 
     }
 

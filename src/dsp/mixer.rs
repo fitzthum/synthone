@@ -2,6 +2,8 @@
 //
 // split into multiple files if we ever get more than two
 
+use log::*;
+
 pub trait Mixer { 
     fn add_input(&mut self, channel: Vec<f32>, gain: f32);
     fn process(&self) -> Vec<f32>;
