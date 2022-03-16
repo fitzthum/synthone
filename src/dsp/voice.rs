@@ -5,13 +5,12 @@
 
 use crate::notes::Note;
 use crate::plugin_state::PluginState;
+use crate::dsp::envelope::{Envelope, ADSR};
+use crate::dsp::oscillator::{Oscillator, Sine};
 
 use std::sync::Arc;
-use std::f32::consts::PI;
 
 use log::*;
-
-use crate::dsp::envelope::{Envelope, ADSR};
 
 fn midi_pitch_to_freq(pitch: u8) -> f32 {
     const A4_PITCH: i8 = 69;
@@ -40,28 +39,27 @@ impl Voice {
 		// TODO should probably make a local copy of sample rate 
 		// so that we don't have to get this lock every time
 		let time_per_sample = 1.0 / self.params.get_sample_rate();
-        let mut output = Vec::with_capacity(buffer_len);
+
+        let oscillator = Sine::new(midi_pitch_to_freq(self.note.number));
         let envelope = ADSR::new(
             self.params.attack.get(),
             self.params.delay.get(),
             self.params.sustain.get(),
             self.params.release.get());
 
+        let mut output = Vec::with_capacity(buffer_len);
+
         for i in 0..buffer_len {
             let time = self.note.time + (time_per_sample * (i as f32));
-            let alpha = envelope.process(self.note.time, self.note.on, self.note.off_time);
-            let sample = alpha *(time * midi_pitch_to_freq(self.note.number) * (PI * 2.0)).sin();
+            let alpha = envelope.process(time, self.note.on, self.note.off_time);
+            let sample = alpha * oscillator.process(time);
 
-            // envelope goes here
-
-            // should probably switch to an array?
             output.push(sample);
 
         }
         output
 
     }
-
 }
 
 

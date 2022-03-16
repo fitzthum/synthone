@@ -13,6 +13,7 @@ use vst::buffer::AudioBuffer;
 use log::*;
 
 mod envelope;
+mod oscillator;
 
 pub(super) struct PluginDsp {
     params: Arc<PluginState>,

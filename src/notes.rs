@@ -75,7 +75,7 @@ impl Notebook {
     // long enough that they can't make a sound anymore
     pub fn purge_old_notes(&mut self, threshold: f32) {
         self.notes.retain(|_, note| {
-            (note.time - note.off_time) < threshold
+            note.on || (note.time - note.off_time) < threshold
         });
 
     }
