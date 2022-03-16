@@ -72,7 +72,7 @@ impl Plugin for Synth1Vst {
             category: Category::Synth,
             inputs: 0,
             outputs: 2,
-            parameters: 1,
+            parameters: 5,
             initial_delay: 0,
             preset_chunks: true,
             ..Info::default()

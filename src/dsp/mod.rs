@@ -12,6 +12,8 @@ use std::sync::Arc;
 use vst::buffer::AudioBuffer;
 use log::*;
 
+mod envelope;
+
 pub(super) struct PluginDsp {
     params: Arc<PluginState>,
 }

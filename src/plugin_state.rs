@@ -14,7 +14,12 @@ use crate::notes::Notebook;
 pub struct PluginState {
     pub notebook: RwLock<Notebook>,
     sample_rate: AtomicFloat,
+
     pub main_volume: AtomicFloat,
+    pub attack: AtomicFloat,
+    pub delay: AtomicFloat,
+    pub sustain: AtomicFloat,
+    pub release: AtomicFloat,
 }
 
 impl PluginState {
@@ -23,7 +28,11 @@ impl PluginState {
             notebook: RwLock::new(Notebook::new()),
             // TODO update this with TimeInfo
             sample_rate: AtomicFloat::new(48000.0),
-            main_volume: AtomicFloat::new(0.0),
+            main_volume: AtomicFloat::new(0.5),
+            attack: AtomicFloat::new(0.0),
+            delay: AtomicFloat::new(0.0),
+            sustain: AtomicFloat::new(1.0),
+            release: AtomicFloat::new(0.0),
         }
     }
 
@@ -45,6 +54,10 @@ impl PluginParameters for PluginState {
     fn set_parameter(&self, index: i32, value: f32) {
         match index {
             0 => self.main_volume.set(value),
+            1 => self.attack.set(value),
+            2 => self.delay.set(value),
+            3 => self.sustain.set(value),
+            4 => self.release.set(value),
             _ => ()
         }
     }
@@ -52,6 +65,10 @@ impl PluginParameters for PluginState {
     fn get_parameter(&self, index: i32) -> f32 {
         match index {
             0 => self.main_volume.get(),
+            1 => self.attack.get(),
+            2 => self.delay.get(),
+            3 => self.sustain.get(),
+            4 => self.release.get(),
             _ => 0.0
         }
     }
@@ -59,6 +76,10 @@ impl PluginParameters for PluginState {
     fn get_parameter_label(&self, index: i32) -> String {
         match index {
             0 => "Main Volume".to_string(),
+            1 => "Attack".to_string(),
+            2 => "Delay".to_string(),
+            3 => "Sustain".to_string(),
+            4 => "Release".to_string(),
             _ => unreachable!(),
         }
     }
@@ -66,13 +87,21 @@ impl PluginParameters for PluginState {
     fn get_parameter_text(&self, index: i32) -> String {
         match index {
             0 => "Main Volume".to_string(),
+            1 => "Attack".to_string(),
+            2 => "Delay".to_string(),
+            3 => "Sustain".to_string(),
+            4 => "Release".to_string(),
             _ => unreachable!(),
         }
     }
 
     fn get_parameter_name(&self, index: i32) -> String {
         match index {
-            0 => "Main Volume",
+            0 => "Main Volume".to_string(),
+            1 => "Attack".to_string(),
+            2 => "Delay".to_string(),
+            3 => "Sustain".to_string(),
+            4 => "Release".to_string(),
             _ => unreachable!(),
         }
         .to_string()
