@@ -1,12 +1,12 @@
 use std::sync::Arc;
 
 use vst::{
+    api::Events,
     api::Supported,
     buffer::AudioBuffer,
     editor::Editor,
-    plugin::{CanDo, HostCallback, Info, Plugin, PluginParameters, Category},
     event::Event,
-    api::Events,
+    plugin::{CanDo, Category, HostCallback, Info, Plugin, PluginParameters},
 };
 
 mod dsp;
@@ -16,7 +16,6 @@ mod plugin_state;
 use plugin_state::PluginState;
 
 mod notes;
-
 
 use log::*;
 use simplelog::*;
@@ -28,17 +27,17 @@ struct Synth1Vst {
     host: HostCallback,
     dsp: PluginDsp,
     params: Arc<PluginState>,
-
 }
 
 impl Synth1Vst {
     fn new_maybe_host(maybe_host: Option<HostCallback>) -> Self {
         // a bit janky, but it can tricky to find logs via VST host
-        CombinedLogger::init(
-            vec![
-            WriteLogger::new(LevelFilter::Info, Config::default(), File::create("/home/tobin/Documents/vst.log").unwrap()),
-            ]
-        ).unwrap();
+        CombinedLogger::init(vec![WriteLogger::new(
+            LevelFilter::Info,
+            Config::default(),
+            File::create("/home/tobin/Documents/vst.log").unwrap(),
+        )])
+        .unwrap();
         info!("STARTING PLUGIN");
 
         let host = maybe_host.unwrap_or_default();
@@ -46,11 +45,7 @@ impl Synth1Vst {
         let params = Arc::new(PluginState::default());
         let dsp = PluginDsp::new(params.clone());
 
-        Self {
-            host,
-            dsp,
-            params,
-        }
+        Self { host, dsp, params }
     }
 }
 
@@ -72,7 +67,7 @@ impl Plugin for Synth1Vst {
             category: Category::Synth,
             inputs: 0,
             outputs: 2,
-            parameters: 5,
+            parameters: 6,
             initial_delay: 0,
             preset_chunks: true,
             ..Info::default()
@@ -90,12 +85,11 @@ impl Plugin for Synth1Vst {
                     0x90 => {
                         // note on
                         self.params.note_on(ev);
-                
-                    },
+                    }
                     0x80 => {
                         // note off
                         self.params.note_off(ev);
-                    },
+                    }
                     _ => (),
                 }
             }
@@ -104,11 +98,10 @@ impl Plugin for Synth1Vst {
 
     fn can_do(&self, capability: CanDo) -> Supported {
         match capability {
-            CanDo::ReceiveMidiEvent => Supported::Yes, 
-            //CanDo::ReceiveTimeInfo => Supported::Yes, 
+            CanDo::ReceiveMidiEvent => Supported::Yes,
+            //CanDo::ReceiveTimeInfo => Supported::Yes,
             _ => Supported::Maybe,
         }
-
     }
 
     fn get_parameter_object(&mut self) -> Arc<dyn PluginParameters> {

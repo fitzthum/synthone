@@ -2,10 +2,7 @@
 
 use std::sync::RwLock;
 
-use vst::{
-    plugin::PluginParameters,
-    util::AtomicFloat,
-};
+use vst::{plugin::PluginParameters, util::AtomicFloat};
 
 use vst::event::MidiEvent;
 
@@ -13,13 +10,19 @@ use crate::notes::Notebook;
 
 pub struct PluginState {
     pub notebook: RwLock<Notebook>,
-    sample_rate: AtomicFloat,
+    pub sample_rate: AtomicFloat,
 
+    // amp
     pub main_volume: AtomicFloat,
+
+    // adsr envelope
     pub attack: AtomicFloat,
     pub delay: AtomicFloat,
     pub sustain: AtomicFloat,
     pub release: AtomicFloat,
+
+    // simple filter
+    pub filter_cutoff: AtomicFloat,
 }
 
 impl PluginState {
@@ -33,6 +36,7 @@ impl PluginState {
             delay: AtomicFloat::new(0.0),
             sustain: AtomicFloat::new(1.0),
             release: AtomicFloat::new(0.0),
+            filter_cutoff: AtomicFloat::new(1.0),
         }
     }
 
@@ -42,7 +46,6 @@ impl PluginState {
 
     pub fn note_off(&self, e: MidiEvent) {
         self.notebook.write().unwrap().note_off(e);
-
     }
 
     pub fn get_sample_rate(&self) -> f32 {
@@ -58,7 +61,8 @@ impl PluginParameters for PluginState {
             2 => self.delay.set(value),
             3 => self.sustain.set(value),
             4 => self.release.set(value),
-            _ => ()
+            5 => self.filter_cutoff.set(value),
+            _ => (),
         }
     }
 
@@ -69,7 +73,8 @@ impl PluginParameters for PluginState {
             2 => self.delay.get(),
             3 => self.sustain.get(),
             4 => self.release.get(),
-            _ => 0.0
+            5 => self.filter_cutoff.get(),
+            _ => 0.0,
         }
     }
 
@@ -80,6 +85,7 @@ impl PluginParameters for PluginState {
             2 => "Delay".to_string(),
             3 => "Sustain".to_string(),
             4 => "Release".to_string(),
+            5 => "Filter Cutoff".to_string(),
             _ => unreachable!(),
         }
     }
@@ -91,6 +97,7 @@ impl PluginParameters for PluginState {
             2 => "Delay".to_string(),
             3 => "Sustain".to_string(),
             4 => "Release".to_string(),
+            5 => "Filter Cutoff".to_string(),
             _ => unreachable!(),
         }
     }
@@ -102,6 +109,7 @@ impl PluginParameters for PluginState {
             2 => "Delay".to_string(),
             3 => "Sustain".to_string(),
             4 => "Release".to_string(),
+            5 => "Filter Cutoff".to_string(),
             _ => unreachable!(),
         }
         .to_string()

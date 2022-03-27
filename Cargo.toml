@@ -15,4 +15,5 @@ crate-type = ["cdylib"]
 vst = "^ 0.2"
 log = "0.4.14"
 simplelog = "0.11.2"
-
+rustfft = "6.0.1"
+realfft = "3.0.0"

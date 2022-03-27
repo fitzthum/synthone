@@ -1,7 +1,7 @@
 // Everything we need to keep track of notes.
 
-use vst::event::MidiEvent;
 use std::collections::HashMap;
+use vst::event::MidiEvent;
 
 use log::*;
 
@@ -17,23 +17,22 @@ pub struct Note {
 
 impl Note {
     fn from_midi(e: MidiEvent) -> Note {
-       Note {
+        Note {
             number: e.data[1],
             velocity: e.data[2],
             time: 0.0,
             off_time: 0.0,
             on: true,
-       }
+        }
     }
 
     fn update_time(&mut self, time: f32) {
         self.time += time;
     }
-    
+
     fn turn_off(&mut self) {
         self.on = false;
         self.off_time = self.time;
-
     }
 }
 
@@ -57,7 +56,6 @@ impl Notebook {
         if let Some(note) = self.notes.get_mut(&e.data[1]) {
             note.turn_off();
         }
-
     }
 
     pub fn get_notes(&self) -> Vec<Note> {
@@ -74,9 +72,7 @@ impl Notebook {
     // we need to make sure we get rid of notes that have been off
     // long enough that they can't make a sound anymore
     pub fn purge_old_notes(&mut self, threshold: f32) {
-        self.notes.retain(|_, note| {
-            note.on || (note.time - note.off_time) < threshold
-        });
-
+        self.notes
+            .retain(|_, note| note.on || (note.time - note.off_time) < threshold);
     }
 }
