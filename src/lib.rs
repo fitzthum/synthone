@@ -32,12 +32,14 @@ struct Synth1Vst {
 impl Synth1Vst {
     fn new_maybe_host(maybe_host: Option<HostCallback>) -> Self {
         // a bit janky, but it can tricky to find logs via VST host
+        /*
         CombinedLogger::init(vec![WriteLogger::new(
             LevelFilter::Info,
             Config::default(),
             File::create("/home/tobin/Documents/vst.log").unwrap(),
         )])
         .unwrap();
+        */
         info!("STARTING PLUGIN");
 
         let host = maybe_host.unwrap_or_default();
