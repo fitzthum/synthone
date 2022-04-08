@@ -65,7 +65,7 @@ impl PluginDsp {
             }
         }
 
-        let block_time = num_samples as f32 / self.params.get_sample_rate();
+        let block_time = num_samples as f32 / self.params.sample_rate.get();
         let mut notebook = self.params.notebook.write().unwrap();
         notebook.update_note_times(block_time);
 

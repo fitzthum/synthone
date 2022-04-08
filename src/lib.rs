@@ -1,5 +1,8 @@
 use std::sync::Arc;
 
+#[macro_use]
+extern crate lazy_static;
+
 use vst::{
     api::Events,
     api::Supported,

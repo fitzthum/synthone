@@ -47,10 +47,6 @@ impl PluginState {
     pub fn note_off(&self, e: MidiEvent) {
         self.notebook.write().unwrap().note_off(e);
     }
-
-    pub fn get_sample_rate(&self) -> f32 {
-        self.sample_rate.get() as f32
-    }
 }
 
 impl PluginParameters for PluginState {
