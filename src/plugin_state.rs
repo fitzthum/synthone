@@ -23,6 +23,9 @@ pub struct PluginState {
 
     // simple filter
     pub filter_cutoff: AtomicFloat,
+
+    // wavetable oscillator
+    pub wave_warp: AtomicFloat,
 }
 
 impl PluginState {
@@ -37,6 +40,7 @@ impl PluginState {
             sustain: AtomicFloat::new(1.0),
             release: AtomicFloat::new(0.0),
             filter_cutoff: AtomicFloat::new(1.0),
+            wave_warp: AtomicFloat::new(1.0),
         }
     }
 
@@ -58,6 +62,7 @@ impl PluginParameters for PluginState {
             3 => self.sustain.set(value),
             4 => self.release.set(value),
             5 => self.filter_cutoff.set(value),
+            6 => self.wave_warp.set(value),
             _ => (),
         }
     }
@@ -70,6 +75,7 @@ impl PluginParameters for PluginState {
             3 => self.sustain.get(),
             4 => self.release.get(),
             5 => self.filter_cutoff.get(),
+            6 => self.wave_warp.get(),
             _ => 0.0,
         }
     }
@@ -82,6 +88,7 @@ impl PluginParameters for PluginState {
             3 => "Sustain".to_string(),
             4 => "Release".to_string(),
             5 => "Filter Cutoff".to_string(),
+            6 => "Wave Warp".to_string(),
             _ => unreachable!(),
         }
     }
@@ -94,6 +101,7 @@ impl PluginParameters for PluginState {
             3 => "Sustain".to_string(),
             4 => "Release".to_string(),
             5 => "Filter Cutoff".to_string(),
+            6 => "Wave Warp".to_string(),
             _ => unreachable!(),
         }
     }
@@ -106,6 +114,7 @@ impl PluginParameters for PluginState {
             3 => "Sustain".to_string(),
             4 => "Release".to_string(),
             5 => "Filter Cutoff".to_string(),
+            6 => "Wave Warp".to_string(),
             _ => unreachable!(),
         }
         .to_string()

@@ -24,15 +24,18 @@ pub struct Voice {
     note: Note,
     params: Arc<PluginState>,
     sample_rate: f32,
+    wave_warp: f32,
 }
 
 impl Voice {
     pub fn new(note: Note, params: Arc<PluginState>) -> Voice {
         let sample_rate = params.sample_rate.get();
+        let wave_warp = params.wave_warp.get();
         Voice {
             note,
             params,
             sample_rate,
+            wave_warp,
         }
     }
     pub fn play(&self, buffer_len: usize) -> Vec<f32> {
@@ -40,8 +43,11 @@ impl Voice {
         // so that we don't have to get this lock every time
         let time_per_sample = 1.0 / self.sample_rate;
 
-        let oscillator =
-            WaveTableOscillator::new(midi_pitch_to_freq(self.note.number), self.sample_rate);
+        let oscillator = WaveTableOscillator::new(
+            midi_pitch_to_freq(self.note.number),
+            self.sample_rate,
+            self.wave_warp,
+        );
         let envelope = ADSR::new(
             self.params.attack.get(),
             self.params.delay.get(),
