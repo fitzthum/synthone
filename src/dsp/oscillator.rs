@@ -80,10 +80,33 @@ impl WaveTableOscillator {
         let samples_per_cycle = sample_rate / frequency;
         let scale_factor = WAVE_TABLE_LENGTH as f32 / samples_per_cycle;
 
-        // TODO: calculate this dynamically for N waves
-        let wave_index_a = 0.0;
-        let wave_index_b = 1.0;
-        let scaled_warp = wave_warp;
+        // wave_warp is a float between 0.0 and 1.0. We want to use this to
+        // switch between N waves
+        let mut wave_index_a = 0.0;
+        let mut wave_index_b = 1.0;
+        let mut scaled_warp = wave_warp;
+
+        let n_waves = WAVE_TABLE.waves.len();
+        let wave_width = 1.0 / (n_waves - 1) as f32;
+
+        // there is probably a way to do this arithmetically
+        if n_waves > 2 {
+            for i in 0..(n_waves - 1) {
+                let maybe_a = i as f32;
+                let maybe_b = (i + 1) as f32;
+
+                let maybe_a_threshold = maybe_a * wave_width;
+                let maybe_b_threshold = maybe_b * wave_width;
+
+                if wave_warp <= maybe_b_threshold {
+                    wave_index_a = maybe_a;
+                    wave_index_b = maybe_b;
+
+                    scaled_warp = (wave_warp - maybe_a_threshold) / wave_width;
+                    break;
+                }
+            }
+        }
 
         WaveTableOscillator {
             sample_rate,
@@ -107,7 +130,7 @@ impl Oscillator for WaveTableOscillator {
         let sample_a = WAVE_TABLE.waves[self.wave_index_a as usize].samples[table_offset as usize];
         let sample_b = WAVE_TABLE.waves[self.wave_index_b as usize].samples[table_offset as usize];
 
-        let delta = sample_a - sample_b;
-        sample_b + delta * self.scaled_warp
+        let delta = sample_b - sample_a;
+        sample_a + delta * self.scaled_warp
     }
 }
