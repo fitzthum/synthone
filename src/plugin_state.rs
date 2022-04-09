@@ -26,6 +26,14 @@ pub struct PluginState {
 
     // wavetable oscillator
     pub wave_warp: AtomicFloat,
+
+    // wavetable oscillator envelope
+    pub warp_attack: AtomicFloat,
+    pub warp_delay: AtomicFloat,
+    pub warp_sustain: AtomicFloat,
+    pub warp_release: AtomicFloat,
+
+    pub warp_ratio: AtomicFloat,
 }
 
 impl PluginState {
@@ -35,12 +43,17 @@ impl PluginState {
             // TODO update this with TimeInfo
             sample_rate: AtomicFloat::new(48000.0),
             main_volume: AtomicFloat::new(0.5),
-            attack: AtomicFloat::new(0.0),
+            attack: AtomicFloat::new(0.05),
             delay: AtomicFloat::new(0.0),
             sustain: AtomicFloat::new(1.0),
-            release: AtomicFloat::new(0.0),
+            release: AtomicFloat::new(0.05),
             filter_cutoff: AtomicFloat::new(1.0),
             wave_warp: AtomicFloat::new(1.0),
+            warp_attack: AtomicFloat::new(0.0),
+            warp_delay: AtomicFloat::new(0.0),
+            warp_sustain: AtomicFloat::new(1.0),
+            warp_release: AtomicFloat::new(0.0),
+            warp_ratio: AtomicFloat::new(0.5),
         }
     }
 
@@ -63,6 +76,12 @@ impl PluginParameters for PluginState {
             4 => self.release.set(value),
             5 => self.filter_cutoff.set(value),
             6 => self.wave_warp.set(value),
+            7 => self.warp_attack.set(value),
+            8 => self.warp_delay.set(value),
+            9 => self.warp_sustain.set(value),
+            10 => self.warp_release.set(value),
+            11 => self.warp_ratio.set(value),
+
             _ => (),
         }
     }
@@ -76,6 +95,12 @@ impl PluginParameters for PluginState {
             4 => self.release.get(),
             5 => self.filter_cutoff.get(),
             6 => self.wave_warp.get(),
+            7 => self.warp_attack.get(),
+            8 => self.warp_delay.get(),
+            9 => self.warp_sustain.get(),
+            10 => self.warp_release.get(),
+            11 => self.warp_ratio.get(),
+
             _ => 0.0,
         }
     }
@@ -89,6 +114,12 @@ impl PluginParameters for PluginState {
             4 => "Release".to_string(),
             5 => "Filter Cutoff".to_string(),
             6 => "Wave Warp".to_string(),
+            7 => "Warp Attack".to_string(),
+            8 => "Warp Delay".to_string(),
+            9 => "Warp Sustain".to_string(),
+            10 => "Warp Release".to_string(),
+            11 => "Warp Ratio".to_string(),
+
             _ => unreachable!(),
         }
     }
@@ -102,6 +133,12 @@ impl PluginParameters for PluginState {
             4 => "Release".to_string(),
             5 => "Filter Cutoff".to_string(),
             6 => "Wave Warp".to_string(),
+            7 => "Warp Attack".to_string(),
+            8 => "Warp Delay".to_string(),
+            9 => "Warp Sustain".to_string(),
+            10 => "Warp Release".to_string(),
+            11 => "Warp Ratio".to_string(),
+
             _ => unreachable!(),
         }
     }
@@ -115,6 +152,12 @@ impl PluginParameters for PluginState {
             4 => "Release".to_string(),
             5 => "Filter Cutoff".to_string(),
             6 => "Wave Warp".to_string(),
+            7 => "Warp Attack".to_string(),
+            8 => "Warp Delay".to_string(),
+            9 => "Warp Sustain".to_string(),
+            10 => "Warp Release".to_string(),
+            11 => "Warp Ratio".to_string(),
+
             _ => unreachable!(),
         }
         .to_string()

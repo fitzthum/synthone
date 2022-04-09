@@ -43,10 +43,19 @@ impl Voice {
         // so that we don't have to get this lock every time
         let time_per_sample = 1.0 / self.sample_rate;
 
+        let warp_envelope = ADSR::new(
+            self.params.warp_attack.get(),
+            self.params.warp_delay.get(),
+            self.params.warp_sustain.get(),
+            self.params.warp_release.get(),
+        );
+        let warp_alpha = (self.params.warp_ratio.get() - 0.5)
+            * warp_envelope.process(self.note.time, self.note.on, self.note.off_time);
+
         let oscillator = WaveTableOscillator::new(
             midi_pitch_to_freq(self.note.number),
             self.sample_rate,
-            self.wave_warp,
+            (self.wave_warp + warp_alpha).max(-1.0).min(1.0),
         );
         let envelope = ADSR::new(
             self.params.attack.get(),
