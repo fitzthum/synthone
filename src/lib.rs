@@ -15,10 +15,13 @@ use vst::{
 mod dsp;
 use dsp::PluginDsp;
 
+mod editor;
+
 mod plugin_state;
 use plugin_state::PluginState;
 
 mod notes;
+use editor::PluginEditor;
 
 use log::*;
 use simplelog::*;
@@ -29,6 +32,7 @@ use std::fs::File;
 struct Synth1Vst {
     host: HostCallback,
     dsp: PluginDsp,
+    editor: Option<PluginEditor>,
     params: Arc<PluginState>,
 }
 
@@ -47,10 +51,12 @@ impl Synth1Vst {
 
         let host = maybe_host.unwrap_or_default();
 
+        let editor = Some(PluginEditor::default());
+
         let params = Arc::new(PluginState::default());
         let dsp = PluginDsp::new(params.clone());
 
-        Self { host, dsp, params }
+        Self { host, dsp, editor, params }
     }
 }
 
@@ -114,8 +120,9 @@ impl Plugin for Synth1Vst {
     }
 
     fn get_editor(&mut self) -> Option<Box<dyn Editor>> {
-        // TODO worry about the editor later
-        None
+        self.editor
+            .take()
+            .map(|editor| Box::new(editor) as Box<dyn Editor>)
     }
 }
 
