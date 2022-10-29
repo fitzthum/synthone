@@ -130,33 +130,7 @@ fn draw_ui(ctx: &Context, params: &mut Arc<PluginState>) -> egui::Response {
                 let s = params.sustain.get();
                 let r = params.release.get();
 
-                let STEP_X = 0.01;
-                let OFF_INDEX = 200;
-                let envelope = ADSR::new(a, d, s, r);
-                let points: PlotPoints = (0..300).map(|i| {
-                    let x = i as f32 * STEP_X;
-                    let on = i <= OFF_INDEX;
-                    let y = envelope.process(x, on, OFF_INDEX as f32 * STEP_X);
-
-                    [x as f64, y as f64]
-                }).collect();
-
-                let line = Line::new(points);
-                let plot = Plot::new("ADSR")
-                    .height(100.0)
-                    .width(300.0)
-                    .set_margin_fraction(Vec2::new(3.0,3.0))
-                    .allow_scroll(false)
-                    .allow_zoom(false)
-                    .allow_boxed_zoom(false)
-                    .allow_drag(false)
-                    .show_axes([false, false])
-                    .include_y(0.0)
-                    .include_y(1.0)
-                    .include_x(0.0)
-                    .include_x(3.0);
-                
-                plot.show(ui, |plot_ui| plot_ui.line(line));
+                draw_envelope(ui, a, d, s, r);
 
             })
         })
@@ -172,5 +146,35 @@ fn draw_slider(ui: &mut Ui, params: &PluginState, i: i32) {
     if slider.changed() {
         params.set_parameter(i, val);
     }
+}
+
+fn draw_envelope(ui: &mut Ui, a: f32, d: f32, s: f32, r: f32) {
+    let STEP_X = 0.01;
+    let OFF_INDEX = 200;
+    let envelope = ADSR::new(a, d, s, r);
+    let points: PlotPoints = (0..300).map(|i| {
+        let x = i as f32 * STEP_X;
+        let on = i <= OFF_INDEX;
+        let y = envelope.process(x, on, OFF_INDEX as f32 * STEP_X);
+
+        [x as f64, y as f64]
+    }).collect();
+
+    let line = Line::new(points);
+    let plot = Plot::new("ADSR")
+        .height(100.0)
+        .width(300.0)
+        .set_margin_fraction(Vec2::new(3.0,3.0))
+        .allow_scroll(false)
+        .allow_zoom(false)
+        .allow_boxed_zoom(false)
+        .allow_drag(false)
+        .show_axes([false, false])
+        .include_y(0.0)
+        .include_y(1.0)
+        .include_x(0.0)
+        .include_x(3.0);
+
+    plot.show(ui, |plot_ui| plot_ui.line(line));
 
 }
