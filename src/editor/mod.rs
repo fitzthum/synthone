@@ -157,7 +157,11 @@ fn draw_slider(ui: &mut Ui, params: &PluginState, i: i32) {
     let mut val = params.get_parameter(i);
     let parameter_name = params.get_parameter_label(i);
     let slider =
-        ui.add(egui::Slider::new(&mut val, 0.0..=1.0).text(parameter_name));
+        ui.add(
+            egui::Slider::new(&mut val, 0.0..=1.0)
+                .text(parameter_name)
+                .show_value(false)
+        );
 
     if slider.changed() {
         params.set_parameter(i, val);
@@ -165,8 +169,11 @@ fn draw_slider(ui: &mut Ui, params: &PluginState, i: i32) {
 }
 
 fn draw_envelope(ui: &mut Ui, a: f32, d: f32, s: f32, r: f32, id: &str) {
-    let STEP_X = 0.01;
-    let OFF_INDEX = 200;
+    const STEP_X: f32 = 0.01;
+    const OFF_INDEX: i32 = 200;
+    const HEIGHT: f32 = 30.0;
+    const WIDTH: f32 = 90.0;
+
     let envelope = ADSR::new(a, d, s, r);
     let points: PlotPoints = (0..300).map(|i| {
         let x = i as f32 * STEP_X;
@@ -178,8 +185,8 @@ fn draw_envelope(ui: &mut Ui, a: f32, d: f32, s: f32, r: f32, id: &str) {
 
     let line = Line::new(points);
     let plot = Plot::new(id)
-        .height(100.0)
-        .width(300.0)
+        .height(HEIGHT)
+        .width(WIDTH)
         .set_margin_fraction(Vec2::new(3.0,3.0))
         .allow_scroll(false)
         .allow_zoom(false)
