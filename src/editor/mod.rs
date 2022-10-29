@@ -184,18 +184,30 @@ fn draw_envelope(ui: &mut Ui, a: f32, d: f32, s: f32, r: f32, id: &str) {
     }).collect();
 
     let line = Line::new(points);
+    draw_plot(ui, line, (HEIGHT, WIDTH), (-0.1, 1.1), (-0.1, 3.1), id);
+
+}
+
+fn draw_plot(
+    ui: &mut Ui,
+    line: Line,
+    dimensions: (f32, f32),
+    bounds_x: (f32, f32),
+    bounds_y: (f32, f32),
+    id: &str) {
+
     let plot = Plot::new(id)
-        .height(HEIGHT)
-        .width(WIDTH)
+        .height(dimensions.0)
+        .width(dimensions.1)
         .allow_scroll(false)
         .allow_zoom(false)
         .allow_boxed_zoom(false)
         .allow_drag(false)
         .show_axes([false, false])
-        .include_y(-0.1)
-        .include_y(1.1)
-        .include_x(-0.1)
-        .include_x(3.1)
+        .include_y(bounds_x.0)
+        .include_y(bounds_x.1)
+        .include_x(bounds_y.0)
+        .include_x(bounds_y.1)
         .label_formatter(|_name, _value| { "".to_owned() });
 
     plot.show(ui, |plot_ui| plot_ui.line(line));
