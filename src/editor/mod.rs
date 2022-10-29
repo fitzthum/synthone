@@ -1,5 +1,5 @@
 use baseview::{Size, WindowHandle, WindowOpenOptions, WindowScalePolicy};
-use egui::{Context, Vec2, Ui};
+use egui::{Context, Ui};
 use egui::plot::{Line, Plot, PlotPoints};
 use std::sync::Arc;
 use vst::{editor::Editor, plugin::PluginParameters};
@@ -187,7 +187,6 @@ fn draw_envelope(ui: &mut Ui, a: f32, d: f32, s: f32, r: f32, id: &str) {
     let plot = Plot::new(id)
         .height(HEIGHT)
         .width(WIDTH)
-        .set_margin_fraction(Vec2::new(3.0,3.0))
         .allow_scroll(false)
         .allow_zoom(false)
         .allow_boxed_zoom(false)
@@ -196,7 +195,8 @@ fn draw_envelope(ui: &mut Ui, a: f32, d: f32, s: f32, r: f32, id: &str) {
         .include_y(-0.1)
         .include_y(1.1)
         .include_x(-0.1)
-        .include_x(3.1);
+        .include_x(3.1)
+        .label_formatter(|_name, _value| { "".to_owned() });
 
     plot.show(ui, |plot_ui| plot_ui.line(line));
 
