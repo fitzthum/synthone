@@ -14,8 +14,8 @@ use filter::{Filter, SimpleFilter};
 use std::sync::Arc;
 use vst::buffer::AudioBuffer;
 
-mod envelope;
-mod oscillator;
+pub mod envelope;
+pub mod oscillator;
 
 pub(super) struct PluginDsp {
     params: Arc<PluginState>,

@@ -1,5 +1,7 @@
 use baseview::{Size, WindowHandle, WindowOpenOptions, WindowScalePolicy};
 use egui::Context;
+use egui::Vec2;
+use egui::plot::{Line, Plot, PlotPoints};
 use std::sync::Arc;
 use vst::{editor::Editor, plugin::PluginParameters};
 
@@ -7,6 +9,7 @@ use egui_baseview::EguiWindow;
 use raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
 
 use crate::plugin_state::PluginState;
+use crate::dsp::envelope::{Envelope, ADSR};
 
 pub struct WindowParent(pub WindowHandle);
 unsafe impl Send for WindowParent {}
@@ -58,8 +61,8 @@ unsafe impl HasRawWindowHandle for VstPadre {
     }
 }
 
-const WINDOW_WIDTH: usize = 500;
-const WINDOW_HEIGHT: usize = 600;
+const WINDOW_WIDTH: usize = 900;
+const WINDOW_HEIGHT: usize = 900;
 
 impl Editor for PluginEditor {
     fn position(&self) -> (i32, i32) {
@@ -117,6 +120,7 @@ fn draw_ui(ctx: &Context, params: &mut Arc<PluginState>) -> egui::Response {
             ui.vertical(|ui| {
                 ui.label("Editor");
 
+                // A slider for each parameter.
                 for i in 0..12 {
                     let mut val = params.get_parameter(i);
                     let parameter_name = params.get_parameter_label(i);
@@ -127,7 +131,44 @@ fn draw_ui(ctx: &Context, params: &mut Arc<PluginState>) -> egui::Response {
                         params.set_parameter(i, val);
                     }
                 }
+
+                // Draw envelope 
+                let a = params.attack.get();
+                let d = params.delay.get();
+                let s = params.sustain.get();
+                let r = params.release.get();
+
+                let STEP_X = 0.01;
+                let OFF_INDEX = 200;
+                let envelope = ADSR::new(a, d, s, r);
+                let points: PlotPoints = (0..300).map(|i| {
+                    let x = i as f32 * STEP_X;
+                    let on = i <= OFF_INDEX;
+                    let y = envelope.process(x, on, OFF_INDEX as f32 * STEP_X);
+
+                    [x as f64, y as f64]
+                }).collect();
+
+                let line = Line::new(points);
+                let plot = Plot::new("ADSR")
+                    .height(100.0)
+                    .width(300.0)
+                    .set_margin_fraction(Vec2::new(3.0,3.0))
+                    .allow_scroll(false)
+                    .allow_zoom(false)
+                    .allow_boxed_zoom(false)
+                    .allow_drag(false)
+                    .show_axes([false, false])
+                    .include_y(0.0)
+                    .include_y(1.0)
+                    .include_x(0.0)
+                    .include_x(3.0);
+                
+                plot.show(ui, |plot_ui| plot_ui.line(line));
+
             })
         })
-        .response
+    .response
 }
+
+
