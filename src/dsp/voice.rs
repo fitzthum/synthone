@@ -43,7 +43,7 @@ impl Voice {
 
         let warp_envelope = ADSR::new(
             self.params.warp_attack.get(),
-            self.params.warp_delay.get(),
+            self.params.warp_decay.get(),
             self.params.warp_sustain.get(),
             self.params.warp_release.get(),
         );
@@ -57,7 +57,7 @@ impl Voice {
         );
         let envelope = ADSR::new(
             self.params.attack.get(),
-            self.params.delay.get(),
+            self.params.decay.get(),
             self.params.sustain.get(),
             self.params.release.get(),
         );

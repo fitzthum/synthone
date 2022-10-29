@@ -134,7 +134,7 @@ fn draw_ui(ctx: &Context, params: &mut Arc<PluginState>) -> egui::Response {
 
                 // Draw envelope 
                 let a = params.attack.get();
-                let d = params.delay.get();
+                let d = params.decay.get();
                 let s = params.sustain.get();
                 let r = params.release.get();
 
