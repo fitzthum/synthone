@@ -9,6 +9,7 @@ use raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
 
 use crate::plugin_state::PluginState;
 use crate::dsp::envelope::{Envelope, ADSR};
+use crate::dsp::oscillator::{Oscillator, WaveTableOscillator};
 
 pub struct WindowParent(pub WindowHandle);
 unsafe impl Send for WindowParent {}
@@ -148,6 +149,9 @@ fn draw_ui(ctx: &Context, params: &mut Arc<PluginState>) -> egui::Response {
                 // Warp ratio
                 draw_slider(ui, &params, 11);
 
+                // Oscillator
+                draw_oscillator(ui, params.wave_warp.get(), params.sample_rate.get());
+
             })
         })
     .response
@@ -171,11 +175,12 @@ fn draw_slider(ui: &mut Ui, params: &PluginState, i: i32) {
 fn draw_envelope(ui: &mut Ui, a: f32, d: f32, s: f32, r: f32, id: &str) {
     const STEP_X: f32 = 0.01;
     const OFF_INDEX: i32 = 200;
+    const TOTAL_STEPS: i32 = 300;
     const HEIGHT: f32 = 30.0;
     const WIDTH: f32 = 90.0;
 
     let envelope = ADSR::new(a, d, s, r);
-    let points: PlotPoints = (0..300).map(|i| {
+    let points: PlotPoints = (0..TOTAL_STEPS).map(|i| {
         let x = i as f32 * STEP_X;
         let on = i <= OFF_INDEX;
         let y = envelope.process(x, on, OFF_INDEX as f32 * STEP_X);
@@ -185,6 +190,27 @@ fn draw_envelope(ui: &mut Ui, a: f32, d: f32, s: f32, r: f32, id: &str) {
 
     let line = Line::new(points);
     draw_plot(ui, line, (HEIGHT, WIDTH), (-0.1, 1.1), (-0.1, 3.1), id);
+
+}
+
+fn draw_oscillator(ui: &mut Ui, wave_warp: f32, sample_rate: f32) {
+    const STEP_X: f32 = 0.01;
+    const TOTAL_STEPS: i32 = 300;
+    const HEIGHT: f32 = 60.0;
+    const WIDTH: f32 = 180.0;
+    const ID: &str = "Oscillator";
+
+    let oscillator = WaveTableOscillator::new(1.0, sample_rate, wave_warp);
+    let points: PlotPoints = (0..TOTAL_STEPS).map(|i| {
+        let x = i as f32 * STEP_X;
+        let y = oscillator.process(x);
+
+        [x as f64, y as f64]
+
+    }).collect();
+
+    let line = Line::new(points);
+    draw_plot(ui, line, (HEIGHT, WIDTH), (-0.1, 1.1), (-0.1, 3.1), ID);
 
 }
 
