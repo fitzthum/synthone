@@ -39,24 +39,32 @@ struct Synth1Vst {
 impl Synth1Vst {
     fn new_maybe_host(maybe_host: Option<HostCallback>) -> Self {
         // a bit janky, but it can tricky to find logs via VST host
-        /*
         CombinedLogger::init(vec![WriteLogger::new(
             LevelFilter::Info,
             Config::default(),
-            File::create("/home/tobin/Documents/vst.log").unwrap(),
+            File::create("/tmp/SynthOne.log").unwrap(),
         )])
         .unwrap();
-        */
         info!("STARTING PLUGIN");
 
         let host = maybe_host.unwrap_or_default();
 
-        let editor = Some(PluginEditor::default());
-
         let params = Arc::new(PluginState::default());
+
+        let editor = Some(PluginEditor {
+            params: params.clone(),
+            window_handle: None,
+            is_open: false,
+        });
+
         let dsp = PluginDsp::new(params.clone());
 
-        Self { host, dsp, editor, params }
+        Self {
+            host,
+            dsp,
+            editor,
+            params,
+        }
     }
 }
 
@@ -120,9 +128,12 @@ impl Plugin for Synth1Vst {
     }
 
     fn get_editor(&mut self) -> Option<Box<dyn Editor>> {
-        self.editor
-            .take()
-            .map(|editor| Box::new(editor) as Box<dyn Editor>)
+        info!("get editor");
+        if let Some(editor) = self.editor.take() {
+            Some(Box::new(editor) as Box<dyn Editor>)
+        } else {
+            None
+        }
     }
 }
 

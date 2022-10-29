@@ -13,13 +13,16 @@ crate-type = ["cdylib"]
 
 [dependencies]
 vst = "^ 0.2"
-vst_window = "^ 0.3"
 log = "0.4.14"
 simplelog = "0.11.2"
-raw-window-handle = "^ 0.4"
 rustfft = "6.0.1"
 realfft = "3.0.0"
 serde_json = "1.0.79"
 serde = { version = "1.0.136", features = ["derive"] }
 lazy_static = "1.4.0"
 rust-embed = "6.3.0"
+egui = "0.19"
+egui-baseview = { git = "https://github.com/BillyDM/egui-baseview" }
+baseview = { git = "https://github.com/RustAudio/baseview.git", rev = "eae4033e7d2cc9c31ccaa2794d5d08eedf2f510c" }
+raw-window-handle = { version = "0.4.2", features = ["alloc"] }
+xcb = "1.1.1"
