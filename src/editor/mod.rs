@@ -1,6 +1,5 @@
 use baseview::{Size, WindowHandle, WindowOpenOptions, WindowScalePolicy};
-use egui::Context;
-use egui::Vec2;
+use egui::{Context, Vec2, Ui};
 use egui::plot::{Line, Plot, PlotPoints};
 use std::sync::Arc;
 use vst::{editor::Editor, plugin::PluginParameters};
@@ -122,14 +121,7 @@ fn draw_ui(ctx: &Context, params: &mut Arc<PluginState>) -> egui::Response {
 
                 // A slider for each parameter.
                 for i in 0..12 {
-                    let mut val = params.get_parameter(i);
-                    let parameter_name = params.get_parameter_label(i);
-                    let slider =
-                        ui.add(egui::Slider::new(&mut val, 0.0..=1.0).text(parameter_name));
-
-                    if slider.changed() {
-                        params.set_parameter(i, val);
-                    }
+                    draw_slider(ui, &params, i);
                 }
 
                 // Draw envelope 
@@ -171,4 +163,14 @@ fn draw_ui(ctx: &Context, params: &mut Arc<PluginState>) -> egui::Response {
     .response
 }
 
+fn draw_slider(ui: &mut Ui, params: &PluginState, i: i32) {
+    let mut val = params.get_parameter(i);
+    let parameter_name = params.get_parameter_label(i);
+    let slider =
+        ui.add(egui::Slider::new(&mut val, 0.0..=1.0).text(parameter_name));
 
+    if slider.changed() {
+        params.set_parameter(i, val);
+    }
+
+}
