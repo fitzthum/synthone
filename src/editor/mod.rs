@@ -61,7 +61,7 @@ unsafe impl HasRawWindowHandle for VstPadre {
 }
 
 const WINDOW_WIDTH: usize = 900;
-const WINDOW_HEIGHT: usize = 900;
+const WINDOW_HEIGHT: usize = 1200;
 
 impl Editor for PluginEditor {
     fn position(&self) -> (i32, i32) {
@@ -119,8 +119,8 @@ fn draw_ui(ctx: &Context, params: &mut Arc<PluginState>) -> egui::Response {
             ui.vertical(|ui| {
                 ui.label("Editor");
 
-                // A slider for each parameter.
-                for i in 0..12 {
+                // Sliders for volume and envelope
+                for i in 0..5 {
                     draw_slider(ui, &params, i);
                 }
 
@@ -130,7 +130,23 @@ fn draw_ui(ctx: &Context, params: &mut Arc<PluginState>) -> egui::Response {
                 let s = params.sustain.get();
                 let r = params.release.get();
 
-                draw_envelope(ui, a, d, s, r);
+                draw_envelope(ui, a, d, s, r, "env1");
+                
+                // Sliders for filter and wave warp
+                for i in 5..11 {
+                    draw_slider(ui, &params, i);
+                }
+
+                let a = params.warp_attack.get();
+                let d = params.warp_decay.get();
+                let s = params.warp_sustain.get();
+                let r = params.warp_release.get();
+
+                // Wave warp envelope
+                draw_envelope(ui, a, d, s, r, "env2");
+
+                // Warp ratio
+                draw_slider(ui, &params, 11);
 
             })
         })
@@ -148,7 +164,7 @@ fn draw_slider(ui: &mut Ui, params: &PluginState, i: i32) {
     }
 }
 
-fn draw_envelope(ui: &mut Ui, a: f32, d: f32, s: f32, r: f32) {
+fn draw_envelope(ui: &mut Ui, a: f32, d: f32, s: f32, r: f32, id: &str) {
     let STEP_X = 0.01;
     let OFF_INDEX = 200;
     let envelope = ADSR::new(a, d, s, r);
@@ -161,7 +177,7 @@ fn draw_envelope(ui: &mut Ui, a: f32, d: f32, s: f32, r: f32) {
     }).collect();
 
     let line = Line::new(points);
-    let plot = Plot::new("ADSR")
+    let plot = Plot::new(id)
         .height(100.0)
         .width(300.0)
         .set_margin_fraction(Vec2::new(3.0,3.0))
@@ -170,10 +186,10 @@ fn draw_envelope(ui: &mut Ui, a: f32, d: f32, s: f32, r: f32) {
         .allow_boxed_zoom(false)
         .allow_drag(false)
         .show_axes([false, false])
-        .include_y(0.0)
-        .include_y(1.0)
-        .include_x(0.0)
-        .include_x(3.0);
+        .include_y(-0.1)
+        .include_y(1.1)
+        .include_x(-0.1)
+        .include_x(3.1);
 
     plot.show(ui, |plot_ui| plot_ui.line(line));
 
