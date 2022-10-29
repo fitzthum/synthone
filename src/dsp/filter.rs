@@ -1,8 +1,6 @@
 // Attempting to make a filter....
 //
-
 use realfft::RealFftPlanner;
-use rustfft::num_complex::Complex32;
 
 pub trait Filter {
     fn process(&self, buffer: &mut Vec<f32>);

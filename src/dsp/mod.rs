@@ -11,7 +11,6 @@ use mixer::{Amp, Mixer, SimpleAmp, SimpleMixer};
 mod filter;
 use filter::{Filter, SimpleFilter};
 
-use log::*;
 use std::sync::Arc;
 use vst::buffer::AudioBuffer;
 

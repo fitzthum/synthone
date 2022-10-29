@@ -3,9 +3,7 @@ use egui::Context;
 use std::sync::Arc;
 use vst::{editor::Editor, plugin::PluginParameters};
 
-use log::*;
-
-use egui_baseview::{EguiWindow, Queue};
+use egui_baseview::EguiWindow;
 use raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
 
 use crate::plugin_state::PluginState;
@@ -84,13 +82,11 @@ impl Editor for PluginEditor {
     }
 
     fn open(&mut self, parent: *mut ::std::ffi::c_void) -> bool {
-        info!("Opening Editor");
         if self.is_open {
             return false;
         }
         self.is_open = true;
 
-        info!("Creating Settings");
         let settings = WindowOpenOptions {
             title: String::from("SynthOne"),
             size: Size::new(WINDOW_WIDTH as f64, WINDOW_HEIGHT as f64),
@@ -98,7 +94,6 @@ impl Editor for PluginEditor {
             gl_config: Some(Default::default()),
         };
 
-        info!("Creating Window Handle");
         let vst_parent = VstPadre { parent };
         let window_handle = EguiWindow::open_parented(
             &vst_parent,
@@ -109,10 +104,7 @@ impl Editor for PluginEditor {
                 draw_ui(egui_ctx, state);
             },
         );
-        info!("Window handle II");
-
         self.window_handle = Some(WindowParent(window_handle));
-        info!("Done with open");
 
         true
     }
@@ -120,7 +112,6 @@ impl Editor for PluginEditor {
 
 #[inline(always)]
 fn draw_ui(ctx: &Context, params: &mut Arc<PluginState>) -> egui::Response {
-    info!("Draw UI");
     egui::CentralPanel::default()
         .show(ctx, |ui| {
             ui.vertical(|ui| {

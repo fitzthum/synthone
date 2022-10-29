@@ -3,8 +3,6 @@
 use std::collections::HashMap;
 use vst::event::MidiEvent;
 
-use log::*;
-
 // Note must be public so it can be used in Voice
 #[derive(Clone, Copy)]
 pub struct Note {
