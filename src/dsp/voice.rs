@@ -41,7 +41,7 @@ impl Voice {
         // so that we don't have to get this lock every time
         let time_per_sample = 1.0 / self.sample_rate;
 
-        let warp_envelope = ADSR::new(
+        let mut warp_envelope = ADSR::new(
             self.params.warp_attack.get(),
             self.params.warp_decay.get(),
             self.params.warp_sustain.get(),
@@ -55,7 +55,7 @@ impl Voice {
             self.sample_rate,
             (self.wave_warp + warp_alpha).max(-1.0).min(1.0),
         );
-        let envelope = ADSR::new(
+        let mut envelope = ADSR::new(
             self.params.attack.get(),
             self.params.decay.get(),
             self.params.sustain.get(),

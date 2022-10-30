@@ -179,7 +179,7 @@ fn draw_envelope(ui: &mut Ui, a: f32, d: f32, s: f32, r: f32, id: &str) {
     const HEIGHT: f32 = 30.0;
     const WIDTH: f32 = 90.0;
 
-    let envelope = ADSR::new(a, d, s, r);
+    let mut envelope = ADSR::new(a, d, s, r);
     let points: PlotPoints = (0..TOTAL_STEPS).map(|i| {
         let x = i as f32 * STEP_X;
         let on = i <= OFF_INDEX;
