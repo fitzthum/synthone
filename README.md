@@ -1,6 +1,16 @@
 # Rust Synth 
 
-First try at making a VST Synth Plugin with Rust. Loosely inspired by ampli-fe.
+A basic VST Synth written in Rust including editor made with `egui`.
+This is a wavetable synth. The wavetable can be swept via an envelope.
+
+The `wave warp` parameter indexes the wavetable.
+The `warp ratio` parameter controls how much the warp envelope modifies the wave warp.
+By default the `warp ratio` is set to 0.5, meaning that the warp envelope has no effect.
+When the `warp ratio` is > 0.5, the table will be swept upward depending on the warp envelope.
+
+In general, this plugin has a lot of problems. There are a couple of strange artifacts
+and the filter does not work properly.
+The structure of the code can be greatly improved and will be in the upcoming SynthTwo.
 
 # Usage
 
