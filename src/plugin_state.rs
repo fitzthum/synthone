@@ -48,11 +48,11 @@ impl PluginState {
             sustain: AtomicFloat::new(1.0),
             release: AtomicFloat::new(0.05),
             filter_cutoff: AtomicFloat::new(1.0),
-            wave_warp: AtomicFloat::new(1.0),
+            wave_warp: AtomicFloat::new(0.5),
             warp_attack: AtomicFloat::new(0.0),
             warp_decay: AtomicFloat::new(0.0),
-            warp_sustain: AtomicFloat::new(1.0),
-            warp_release: AtomicFloat::new(0.0),
+            warp_sustain: AtomicFloat::new(0.5),
+            warp_release: AtomicFloat::new(1.0),
             warp_ratio: AtomicFloat::new(0.5),
         }
     }
