@@ -14,6 +14,12 @@ use crate::dsp::oscillator::{Oscillator, WaveTableOscillator};
 pub struct WindowParent(pub WindowHandle);
 unsafe impl Send for WindowParent {}
 
+struct VstParent {
+    parent: *mut ::std::ffi::c_void,
+}
+
+unsafe impl Send for VstParent {}
+
 pub struct PluginEditor {
     pub params: Arc<PluginState>,
     pub window_handle: Option<WindowParent>,
@@ -44,13 +50,8 @@ unsafe impl HasRawWindowHandle for VstParent {
     }
 }
 
-struct VstPadre {
-    parent: *mut ::std::ffi::c_void,
-}
-unsafe impl Send for VstPadre {}
-
 #[cfg(target_os = "linux")]
-unsafe impl HasRawWindowHandle for VstPadre {
+unsafe impl HasRawWindowHandle for VstParent {
     fn raw_window_handle(&self) -> RawWindowHandle {
         use raw_window_handle::XcbHandle;
 
@@ -97,7 +98,7 @@ impl Editor for PluginEditor {
             gl_config: Some(Default::default()),
         };
 
-        let vst_parent = VstPadre { parent };
+        let vst_parent = VstParent { parent };
         let window_handle = EguiWindow::open_parented(
             &vst_parent,
             settings,
